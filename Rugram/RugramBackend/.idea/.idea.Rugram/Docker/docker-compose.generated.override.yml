@@ -1,0 +1,74 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  Auth:
+    build:
+      context: "D:\\ReTest\\Rugram\\RugramBackend"
+      dockerfile: "./Auth/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/Auth.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "rugramauth:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\user\\.nuget\\packages:/root/.nuget/packages"
+    - "D:\\ReTest\\Rugram\\RugramBackend\\Auth:/app:rw"
+    - "D:\\ReTest\\Rugram\\RugramBackend:/src:rw"
+    working_dir: "/app"
+  Gateway:
+    build:
+      context: "D:\\ReTest\\Rugram\\RugramBackend"
+      dockerfile: "./Gateway/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/Gateway.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "rugramgateway:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\user\\.nuget\\packages:/root/.nuget/packages"
+    - "D:\\ReTest\\Rugram\\RugramBackend\\Gateway:/app:rw"
+    - "D:\\ReTest\\Rugram\\RugramBackend:/src:rw"
+    working_dir: "/app"
+  Post:
+    build:
+      context: "D:\\ReTest\\Rugram\\RugramBackend"
+      dockerfile: "./Posts/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/Posts.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "rugrampost:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\user\\.nuget\\packages:/root/.nuget/packages"
+    - "D:\\ReTest\\Rugram\\RugramBackend\\Posts:/app:rw"
+    - "D:\\ReTest\\Rugram\\RugramBackend:/src:rw"
+    working_dir: "/app"
+  Profile:
+    build:
+      context: "D:\\ReTest\\Rugram\\RugramBackend"
+      dockerfile: "./Profile/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/Profile.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "rugramprofile:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\user\\.nuget\\packages:/root/.nuget/packages"
+    - "D:\\ReTest\\Rugram\\RugramBackend\\Profile:/app:rw"
+    - "D:\\ReTest\\Rugram\\RugramBackend:/src:rw"
+    working_dir: "/app"

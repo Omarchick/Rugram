@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+message GetPhotoGrpcRequest{
+  string profileId = 1;
+  string photoId = 2;
+}
+
+message GetPhotoGrpcResponse{
+  bytes photo = 1;
+  int32 httpStatusCode = 2;
+}
+
+message GetPostsGrpcRequest{
+  string profileId = 1;
+  int32 pageSize = 2;
+  int32 pageNumber = 3;
+}
+
+message GetPostsGrpcResponse{
+  repeated ProfilePostGrpc Posts = 1;
+  int32 totalPostsCount = 2;
+  int32 httpStatusCode = 3;
+}
+
+message ProfilePostGrpc{
+  string postId = 1;
+  string Description = 2;
+  google.protobuf.Timestamp dateOfCreation = 3;
+  repeated string photoIds = 4;
+}
+
+message GetPostGrpcRequest{
+  string PostId = 1;
+}
+
+message GetPostGrpcResponse{
+  int32 httpStatusCode = 1;
+  string ProfileId = 2;
+  google.protobuf.Timestamp dateOfCreation = 3;
+  string Description = 4;
+  repeated bytes Photos = 5;
+}
+
+service PostMicroservice{
+  rpc GetPhoto (GetPhotoGrpcRequest) returns (GetPhotoGrpcResponse);
+  rpc GetPosts (GetPostsGrpcRequest) returns (GetPostsGrpcResponse);
+  rpc GetPost (GetPostGrpcRequest) returns (GetPostGrpcResponse);
+}

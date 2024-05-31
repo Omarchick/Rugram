@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message CreateProfileGrpcRequest{
+  string profileId = 1;
+  string profileName = 2;
+}
+
+message CreateProfileGrpcResponse{
+  int32 httpStatusCode = 1;
+}
+
+service ProfileForAuthMicroservice{
+  rpc CreateProfile (CreateProfileGrpcRequest) returns (CreateProfileGrpcResponse);
+}

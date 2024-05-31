@@ -1,0 +1,26 @@
+syntax = "proto3";
+option csharp_namespace = "PostForProfileMicroservice";
+import "google/protobuf/timestamp.proto";
+
+message GetFeedGrpcRequest{
+  repeated string subscriptionIds = 1;
+  int32 pageSize = 2;
+  int32 pageNumber = 3;
+}
+
+message GetFeedGrpcResponse{
+  int32 httpStatusCode = 1;
+  repeated FeedPostGrpcDto FeedPostDto = 2;
+}
+
+message FeedPostGrpcDto{
+  string profileId = 1;
+  string postId = 2;
+  string Description = 3;
+  google.protobuf.Timestamp dateOfCreation = 4;
+  repeated string photoIds = 5;
+}
+
+service PostForProfileMicroservice{
+  rpc GetFeed (GetFeedGrpcRequest) returns (GetFeedGrpcResponse);
+}

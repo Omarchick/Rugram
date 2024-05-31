@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+message UpdateJwtTokenGrpcRequest{
+  string refreshToken = 1;
+  string oldJwtToken = 2;
+}
+
+message UpdateJwtTokenGrpcResponse{
+  string jwtToken = 1;
+  int32 httpStatusCode = 2;
+}
+
+message LoginGrpcRequest{
+  string email = 1;
+  string password = 2;
+}
+
+message LoginGrpcResponse{
+  int32 httpStatusCode = 1;
+  string refreshToken = 2;
+  string jwtToken = 3;
+}
+
+message RegisterUserGrpcRequest{
+  string mailConfirmationToken = 1;
+  string email = 2;
+  string password = 3;
+  string profileName = 4;
+}
+
+message RegisterUserGrpcResponse{
+  int32 httpStatusCode = 1;
+  string refreshToken = 2;
+  string jwtToken = 3;
+}
+
+message SendEmailConfirmationGrpcRequest{
+  string email = 1;
+}
+
+
+message SendEmailConfirmationGrpcResponse{
+  int32 httpStatusCode = 1;
+}
+
+service AuthMicroservice{
+  rpc RegisterUser (RegisterUserGrpcRequest) returns (RegisterUserGrpcResponse);
+  rpc SendEmailConfirmation (SendEmailConfirmationGrpcRequest) returns (SendEmailConfirmationGrpcResponse);
+  rpc Login (LoginGrpcRequest) returns (LoginGrpcResponse);
+  rpc UpdateJwtTokenGrpc (UpdateJwtTokenGrpcRequest) returns (UpdateJwtTokenGrpcResponse);
+}

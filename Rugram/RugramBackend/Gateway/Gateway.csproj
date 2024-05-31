@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <UserSecretsId>48e4913e-4a48-40d4-b685-c71e28a8a8b0</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="13.0.1" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.62.0"/>
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.5.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Protobuf Include="Grpc\Protos\AuthService.proto">
+            <GrpcServices>Both</GrpcServices>
+            <Access>Public</Access>
+            <ProtoCompile>True</ProtoCompile>
+            <CompileOutputs>True</CompileOutputs>
+            <OutputDir>obj\Debug\net8.0\</OutputDir>
+            <Generator>MSBuild:Compile</Generator>
+        </Protobuf>
+        <Protobuf Include="Grpc\Protos\PostService.proto">
+          <GrpcServices>Both</GrpcServices>
+          <Access>Public</Access>
+          <ProtoCompile>True</ProtoCompile>
+          <CompileOutputs>True</CompileOutputs>
+          <OutputDir>obj\Debug\net8.0\</OutputDir>
+          <Generator>MSBuild:Compile</Generator>
+        </Protobuf>
+        <Protobuf Include="Grpc\Protos\ProfileService.proto">
+            <GrpcServices>Both</GrpcServices>
+            <Access>Public</Access>
+            <ProtoCompile>True</ProtoCompile>
+            <CompileOutputs>True</CompileOutputs>
+            <OutputDir>obj\Debug\net8.0\</OutputDir>
+            <Generator>MSBuild:Compile</Generator>
+        </Protobuf>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Contracts.RabbitMq\Contracts.RabbitMq.csproj" />
+      <ProjectReference Include="..\Infrastructure.AutoMapper\Infrastructure.AutoMapper.csproj" />
+    </ItemGroup>
+
+</Project>

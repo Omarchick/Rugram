@@ -1,0 +1,228 @@
+networks:
+  rugram:
+    name: rugram_default
+services:
+  Gateway:
+    container_name: Gateway
+    image: rugramgateway
+    ports:
+      - "3001:443"
+    restart: always
+    build:
+      context: ./RugramBackend
+      dockerfile: ./Gateway/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifyPass}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - AuthOptions__Issuer=RugramAuth
+      - AuthOptions__Audience=Rugram
+      - AuthOptions__JwtSecretKey=${JwtSecretKey}
+      - AuthOptions__AccessTokenLifetimeInMinutes=2
+      - Microservices__AuthAddress=http://auth:80
+      - Microservices__ProfileAddress=http://profile:80
+      - Microservices__PostAddress=http://post:80
+      - RabbitMqConfig__Username=${RabbitMqUser}
+      - RabbitMqConfig__Password=${RabbitMqPassword}
+      - RabbitMqConfig__Hostname=rabbitMq
+      - RabbitMqConfig__Port=5672
+    depends_on:
+      - RabbitMq
+    networks:
+      rugram:
+        aliases:
+          - gateway
+  Auth:
+    container_name: Auth
+    image: rugramauth
+    restart: always
+    build:
+      context: ./RugramBackend
+      dockerfile: ./Auth/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - AuthOptions__Issuer=RugramAuth
+      - AuthOptions__Audience=Rugram
+      - AuthOptions__JwtSecretKey=${JwtSecretKey}
+      - AuthOptions__AccessTokenLifetimeInMinutes=2
+      - AuthOptions__RefreshTokenLifetimeInHours=168
+      - Cache__SlidingExpirationForRefreshTokenInMinutes=5
+      - MailConfirmationToken__LifetimeInHours=24
+      - EmailConfig__Sender=alinaagro@inbox.ru
+      - EmailConfig__SenderName=RugramES
+      - EmailConfig__SenderPassword=${EmailSenderPassword}
+      - SmtpSettings__Port=587
+      - SmtpSettings__SmtpAddress=smtp.mail.ru
+      - Domain__AppUrl=http://localhost:3010
+      - ConnectionStrings__PostreSQL=${AuthConnectionStringPostreSQL}
+      - ConnectionStrings__Redis=redisAuth:6379,password=${AuthRedisPassword}
+      - Microservices__ProfileAddress=http://profile:80
+      - RabbitMqConfig__Username=${RabbitMqUser}
+      - RabbitMqConfig__Password=${RabbitMqPassword}
+      - RabbitMqConfig__Hostname=rabbitMq
+      - RabbitMqConfig__Port=5672
+    depends_on:
+      - DbAuth
+      - RedisAuth
+      - RabbitMq
+    networks:
+      rugram:
+        aliases:
+          - auth
+  RedisAuth:
+    container_name: RedisAuth
+    image: redis:7.2.3-alpine3.18
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${AuthRedisPassword}
+    ports:
+      - "3002:6379"
+    networks:
+      rugram:
+        aliases:
+          - redisAuth
+  DbAuth:
+    container_name: DbAuth
+    image: postgres:16.0-alpine3.18
+    restart: always
+    ports:
+      - "3003:5432"
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: ${DbAuthPassword}
+      POSTGRES_DB: RugramAuth
+    networks:
+      rugram:
+        aliases:
+          - dbAuth
+  Profile:
+    container_name: Profile
+    image: rugramprofile
+    restart: always
+    build:
+      context: ./RugramBackend
+      dockerfile: ./Profile/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__PostreSQL=${ProfileConnectionStringPostreSQL}
+      - RabbitMqConfig__Username=${RabbitMqUser}
+      - RabbitMqConfig__Password=${RabbitMqPassword}
+      - RabbitMqConfig__Hostname=rabbitMq
+      - RabbitMqConfig__Port=5672
+      - MinioS3__AccessKey=${MinioS3AccessKey}
+      - MinioS3__SecretKey=${MinioS3SecretKey}
+      - MinioS3__Timeout=5000
+      - MinioS3__Endpoint=profileMinioS3:9000
+      - Microservices__PostAddress=http://post:80
+    depends_on:
+      - DbProfile
+      - ProfileMinioS3
+      - RabbitMq
+    networks:
+      rugram:
+        aliases:
+          - profile
+  DbProfile:
+    container_name: DbProfile
+    image: postgres:16.0-alpine3.18
+    restart: always
+    ports:
+      - "3004:5432"
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: ${DbProfilePassword}
+      POSTGRES_DB: RugramProfile
+    networks:
+      rugram:
+        aliases:
+          - dbProfile
+  ProfileMinioS3:
+    image: minio/minio
+    container_name: profileMinioS3
+    ports:
+      - "9002:9000"
+      - "9003:9001"
+    command: server --console-address ":9001" /data/
+    networks:
+      rugram:
+        aliases:
+          - profileMinioS3
+  Post:
+    container_name: Post
+    image: rugrampost
+    restart: always
+    build:
+      context: ./RugramBackend
+      dockerfile: ./Posts/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__PostreSQL=${PostConnectionStringPostreSQL}
+      - MinioS3__AccessKey=${MinioS3AccessKey}
+      - MinioS3__SecretKey=${MinioS3SecretKey}
+      - MinioS3__Timeout=5000
+      - MinioS3__Endpoint=postMinioS3:9000
+      - RabbitMqConfig__Username=${RabbitMqUser}
+      - RabbitMqConfig__Password=${RabbitMqPassword}
+      - RabbitMqConfig__Hostname=rabbitMq
+      - RabbitMqConfig__Port=5672
+    depends_on:
+      - DbPost
+      - PostMinioS3
+      - RabbitMq
+    networks:
+      rugram:
+        aliases:
+          - post
+  DbPost:
+    container_name: DbPost
+    image: postgres:16.0-alpine3.18
+    restart: always
+    ports:
+      - "3005:5432"
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: ${DbPostPassword}
+      POSTGRES_DB: RugramPost
+    networks:
+      rugram:
+        aliases:
+          - dbPost
+  PostMinioS3:
+    image: minio/minio
+    container_name: postMinioS3
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server --console-address ":9001" /data/
+    networks:
+      rugram:
+        aliases:
+          - postMinioS3
+  RabbitMq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RabbitMqUser}
+      RABBITMQ_DEFAULT_PASS: ${RabbitMqPassword}
+    networks:
+      rugram:
+        aliases:
+          - rabbitMq
+  RugramFrontend:
+    image: rugramfrontend
+    container_name: rugramfrontend
+    ports:
+      - "3010:5173"
+    build:
+      context: ./RugramFrontend
+      dockerfile: Dockerfile
+    networks:
+      rugram:
+        aliases:
+          - rugramrontend

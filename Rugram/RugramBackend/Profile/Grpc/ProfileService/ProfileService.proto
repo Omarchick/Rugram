@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+message GetProfileIndicatorsGrpcRequest{
+  string profileId = 1;
+}
+
+message GetProfileIndicatorsGrpcResponse{
+  int32 httpStatusCode = 1;
+  int32 SubscribersCount = 2;
+  int32 SubscriptionsCount = 3;
+}
+
+message GetProfileNameGrpcRequest{
+  string profileId = 1;
+}
+
+message GetProfileNameGrpcResponse{
+  int32 httpStatusCode = 1;
+  string profileName = 2;
+}
+
+message GetProfilePhotoGrpcRequest{
+  string profileId = 1;
+}
+
+message GetProfilePhotoGrpcResponse{
+  int32 httpStatusCode = 1;
+  bytes profilePhoto = 2;
+}
+
+message SubscribeGrpcRequest{
+  string SubscriberId = 1;
+  string IdOfProfileSubscribedTo = 2;
+}
+
+message SubscribeGrpcResponse{
+  int32 httpStatusCode = 1;
+}
+
+message UnsubscribeGrpcRequest{
+  string SubscriberId = 1;
+  string IdOfProfileUnsubscribedTo = 2;
+
+}
+
+message UnsubscribeGrpcResponse{
+  int32 httpStatusCode = 1;
+}
+
+message GetFeedGrpcRequest{
+  string profileId = 1;
+  int32 pageSize = 2;
+  int32 pageNumber = 3;
+}
+
+message GetFeedGrpcResponse{
+  int32 httpStatusCode = 1;
+  repeated FeedPostGrpcDto FeedPostDto = 2;
+}
+
+message FeedPostGrpcDto{
+  string profileId = 1;
+  string postId = 2;
+  string profileName = 3;
+  string Description = 4;
+  google.protobuf.Timestamp dateOfCreation = 5;
+  repeated string photoIds = 6;
+}
+
+message GetSubInfoGrpcRequest{
+  string thisProfileId = 1;
+  string otherProfileId = 2;
+}
+
+message GetSubInfoGrpcResponse{
+  int32 httpStatusCode = 1;
+  bool otherProfileSubscribedToThisProfile = 2;
+  bool thisProfileSubscribedToOtherProfile = 3;
+}
+
+message ProfileGrpcDto{
+  string Id = 1;
+  string profileName = 2;
+}
+
+message GetProfileRecommendationsGrpcRequest{
+  string ProfileId = 1;
+  string SearchString = 2;
+  int32 pageSize = 3;
+  int32 pageNumber = 4;
+}
+
+message GetProfileRecommendationsGrpcResponse{
+  int32 httpStatusCode = 1;
+  repeated ProfileGrpcDto profiles = 2;
+}
+
+service ProfileMicroservice{
+  rpc Subscribe (SubscribeGrpcRequest) returns (SubscribeGrpcResponse);
+  rpc Unsubscribe (UnsubscribeGrpcRequest) returns (UnsubscribeGrpcResponse);
+  rpc GetProfileName (GetProfileNameGrpcRequest) returns (GetProfileNameGrpcResponse);
+  rpc GetSubInfo (GetSubInfoGrpcRequest) returns (GetSubInfoGrpcResponse);
+  rpc GetProfilePhoto (GetProfilePhotoGrpcRequest) returns (GetProfilePhotoGrpcResponse);
+  rpc GetProfileIndicators (GetProfileIndicatorsGrpcRequest) returns (GetProfileIndicatorsGrpcResponse);
+  rpc GetFeed (GetFeedGrpcRequest) returns (GetFeedGrpcResponse);
+  rpc GetProfileRecommendations (GetProfileRecommendationsGrpcRequest) returns (GetProfileRecommendationsGrpcResponse);
+}
